@@ -6,10 +6,7 @@
 package components;
 
 import Engine.Driver.Client;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -19,43 +16,48 @@ import javax.swing.JPanel;
 import packets.MessageLoadPacket;
 import packets.MessagePacket;
 import packets.TextMessagePacket;
+import utils.ChatBoxListener;
+import vendor.Vendor;
 
 /**
  *
  * @author hirosume
  */
 public class ChatBox extends javax.swing.JPanel {
-
+	
 	public static int id = -1;
 	Client client;
 	JPanel list = new JPanel();
 	List<Message> messages = new ArrayList();
+	ChatBoxListener listener;
 
 	/**
 	 * Creates new form ChatBox
 	 */
-	public ChatBox(int id, Client client) {
+	public ChatBox(int id) {
+		Vendor.setRoomId(id);
 		ChatBox.id = id;
-		this.client = client;
+		this.client = Vendor.getClient();
 		initComponents();
 		init();
+		listener = new ChatBoxListener(this);
 	}
-
+	
 	private void init() {
 		this.list.setLayout(new BoxLayout(list, BoxLayout.Y_AXIS));
 //		this.list.setLayout(new GridLayout());
 		this.list.setBackground(Color.WHITE);
 		this.loadMessage();
-
+		
 	}
-
+	
 	private void loadMessage() {
 		if (id == -1) {
 			return;
 		}
 		client.send(new MessageLoadPacket(id));
 	}
-
+	
 	private void sendMessage() {
 		if (id != -1) {
 			String message = this.textInput.getText();
@@ -64,37 +66,37 @@ public class ChatBox extends javax.swing.JPanel {
 			packet.date = new Date();
 			packet.content = message;
 			client.send(packet);
-
+			this.textInput.setText("");
 		}
 	}
-
+	
 	public void initMessage(List<MessagePacket> messages, String currentUser) {
 		this.messages = messages.stream().map(i -> convert(i, currentUser)).collect(Collectors.toList());
 		this.render();
 	}
-
+	
 	public void addMessage(MessagePacket m, String currentUser) {
 		Message ms = convert(m, currentUser);
 		this.messages.add(ms);
 		this.render();
 	}
-
+	
 	private Message convert(MessagePacket pk, String currentUser) {
 		TextMessagePacket p = (TextMessagePacket) pk;
 		if (currentUser.equals(pk.sender)) {
-			RightMessage ms = new RightMessage(p.content,pk.sender);
+			RightMessage ms = new RightMessage(p.content, pk.sender);
 			return ms;
 		} else {
-			LeftMessage ms = new LeftMessage(p.content,pk.sender);
+			LeftMessage ms = new LeftMessage(p.content, pk.sender);
 			return ms;
-
+			
 		}
 	}
-
+	
 	private void render() {
 		this.list.removeAll();
 		messages.forEach(m -> {
-
+			
 			if (m instanceof LeftMessage) {
 				this.list.add((LeftMessage) m);
 			} else {

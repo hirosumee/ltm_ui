@@ -13,7 +13,10 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import ltmui.frames.ChatPanel;
 import ltmui.frames.Main;
+import packets.RoomListPacket;
 import packets.RoomPacket;
+import utils.ChatListListener;
+import vendor.Vendor;
 
 /**
  *
@@ -27,8 +30,10 @@ public class RoomList extends JPanel {
 			client.renderChatBox(id);
 		}
 	}
+
 	JPanel list = new JPanel();
 	public ChatPanel client;
+	ChatListListener listener;
 
 	/**
 	 * Creates new form RoomList
@@ -38,7 +43,12 @@ public class RoomList extends JPanel {
 		initComponents();
 		this.client = client;
 		this.scrollList.setPreferredSize(new Dimension(0, 400));
+		listener = new ChatListListener(this);
+		initData();
+	}
 
+	private void initData() {
+		Vendor.getClient().send(new RoomListPacket());
 	}
 
 	public void render(List<RoomPacket> list) {
@@ -46,8 +56,9 @@ public class RoomList extends JPanel {
 			Room r = Room.fromPacket(i);
 			r.register(new OnChange());
 			this.list.add(r);
-
 		});
+		this.revalidate();
+		this.repaint();
 
 	}
 

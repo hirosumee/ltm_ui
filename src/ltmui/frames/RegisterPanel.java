@@ -7,7 +7,10 @@ package ltmui.frames;
 
 import Engine.Driver.Client;
 import javax.swing.SwingUtilities;
+import packets.RegisterFailedPacket;
 import packets.RegisterPacket;
+import packets.RegisterSuccessfulPacket;
+import vendor.Vendor;
 
 /**
  *
@@ -16,20 +19,22 @@ import packets.RegisterPacket;
 public class RegisterPanel extends javax.swing.JPanel {
 
 	Client client;
+	Main main;
 
 	/**
 	 * Creates new form RegisterPanel
 	 */
-	public RegisterPanel(Client client) {
+	public RegisterPanel() {
 		initComponents();
-		this.client = client;
+		this.client = Vendor.getClient();
+		this.main = Vendor.getMain();
+		onEvent();
 	}
-	
-	
+
 	public void setMessage(String str) {
 		this.jLabel1.setText(str);
 	}
-	
+
 	private void registerAccount() {
 		setMessage("Chào bạn");
 		String username = this.userNameText.getText();
@@ -37,11 +42,25 @@ public class RegisterPanel extends javax.swing.JPanel {
 		RegisterPacket rp = new RegisterPacket(username, password);
 		client.send(rp);
 	}
-	
-	
-	
-	
-	
+
+	private void onEvent() {
+		onRegisterFailed();
+		onRegisterSuccess();
+	}
+
+	private void onRegisterFailed() {
+		client.addListener(RegisterFailedPacket.type, pk -> {
+			RegisterFailedPacket packet = (RegisterFailedPacket) pk;
+			this.setMessage(packet.getMessage());
+		});
+	}
+
+	private void onRegisterSuccess() {
+		client.addListener(RegisterSuccessfulPacket.type, pk -> {
+			RegisterSuccessfulPacket packet = (RegisterSuccessfulPacket) pk;
+			this.setMessage("Đăng kí thành công");
+		});
+	}
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -117,12 +136,12 @@ public class RegisterPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void naviLoginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naviLoginButtonActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
 		((Main) SwingUtilities.getWindowAncestor(this)).navigateToLogin();
     }//GEN-LAST:event_naviLoginButtonActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
 		registerAccount();
     }//GEN-LAST:event_jButton1ActionPerformed
 

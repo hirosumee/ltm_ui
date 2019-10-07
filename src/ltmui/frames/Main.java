@@ -5,20 +5,21 @@
  */
 package ltmui.frames;
 
-import Engine.Driver.Client;
+import vendor.Vendor;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import utils.MainListener;
 
 /**
  *
  * @author hirosume
  */
 public class Main extends javax.swing.JFrame {
-	private Client client;
+
 	private JPanel panel;
-	private String username;
+
 	/**
 	 * Creates new form Main
 	 */
@@ -26,60 +27,49 @@ public class Main extends javax.swing.JFrame {
 		initComponents();
 		try {
 			initSocket();
-			new Listener(this);
 			this.navigateToLogin();
 		} catch (IOException ex) {
 			Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
-	public void setCurrentUser(String username) {
-		this.username = username;
+
+	private void initSocket() throws IOException {
+
+		new Vendor(this);
+		System.out.println("Connect successful");
+		initEvent();
 	}
 
-	public String getUsername() {
-		return username;
+	private void initEvent() {
+		new MainListener(this);
 	}
-	
-	private void initSocket() throws IOException {
-		client = new Client();
-		System.out.println("Connect successful");
-	}
+
 	public void navigateToLogin() {
-		this.navigateTo(new LoginPanel(client));
+		this.navigateTo(new LoginPanel());
 	}
+
 	public void navigateToRegister() {
-		this.navigateTo(new RegisterPanel(client));
+		this.navigateTo(new RegisterPanel());
 	}
+
 	public void navigateToChat() {
-		this.navigateTo(new ChatPanel(this));
+		this.navigateTo(new ChatPanel());
 	}
+	public void navigateToRoomCreator() {
+		this.navigateTo(new RoomCreatorPanel());
+	}
+
 	private void navigateTo(JPanel panel) {
 		this.setContentPane(panel);
 		this.panel = panel;
 		this.pack();
 	}
 
-	public Client getClient() {
-		return client;
-	}
-
 	public JPanel getPanel() {
 		return panel;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	// dont care
-	
-	
-	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always

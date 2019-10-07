@@ -8,7 +8,10 @@ package ltmui.frames;
 import Engine.Driver.Client;
 import Engine.interfaces.Packet;
 import javax.swing.SwingUtilities;
+import packets.LoginFailedPacket;
 import packets.LoginPacket;
+import packets.LoginSuccessfulPacket;
+import vendor.Vendor;
 
 /**
  *
@@ -17,33 +20,50 @@ import packets.LoginPacket;
 public class LoginPanel extends javax.swing.JPanel {
 
 	Client client;
+	Main main;
 
 	/**
 	 * Creates new form LoginPanel
 	 */
-	public LoginPanel(Client client) {
+	public LoginPanel() {
+		this.main = Vendor.getMain();
 		initComponents();
-		this.client = client;
+		this.client = Vendor.getClient();
+		eventer();
 	}
-	
+
 	private void login() {
 		setMessage("Chào bạn");
 		String username = this.userNameText.getText();
 		String password = this.passwordText.getText();
-		System.out.println(username);
-		System.out.println(password);
 		Packet packet = new LoginPacket(username, password);
 		client.send(packet);
 	}
-	
+
 	public void setMessage(String msg) {
 		this.messageLabel.setText(msg);
 	}
-	
-	
-	
-	
-	
+
+	private void eventer() {
+		onLoginSuccess();
+		onLoginFailed();
+	}
+
+	private void onLoginSuccess() {
+		client.addListener(LoginSuccessfulPacket.type, pk -> {
+			LoginSuccessfulPacket packet = (LoginSuccessfulPacket) pk;
+			this.setMessage("Đăng nhập thành công");
+			Vendor.setUsername(packet.getUsername());
+			main.navigateToChat();
+		});
+	}
+
+	private void onLoginFailed() {
+		client.addListener(LoginFailedPacket.type, pk -> {
+			LoginFailedPacket packet = (LoginFailedPacket) pk;
+			this.setMessage(packet.getMessage());
+		});
+	}
 
 	/**
 	 * This method is called from within the constructor to initialize the form.
@@ -133,7 +153,7 @@ public class LoginPanel extends javax.swing.JPanel {
     }//GEN-LAST:event_loginButtonActionPerformed
 
     private void naviRegisterButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_naviRegisterButtonActionPerformed
-        // TODO add your handling code here:
+		// TODO add your handling code here:
 		((Main) SwingUtilities.getWindowAncestor(this)).navigateToRegister();
     }//GEN-LAST:event_naviRegisterButtonActionPerformed
 

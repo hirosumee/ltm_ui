@@ -9,10 +9,9 @@ import Engine.Driver.Client;
 import components.ChatBox;
 import components.RoomList;
 import java.util.ArrayList;
-import java.util.List;
 import packets.MessagePacket;
-import packets.RoomListPacket;
-import packets.RoomPacket;
+import utils.ChatListener;
+import vendor.Vendor;
 
 /**
  *
@@ -28,18 +27,15 @@ public class ChatPanel extends javax.swing.JPanel {
 	/**
 	 * Creates new form ChatPanel
 	 */
-	public ChatPanel(Main main) {
-		this.main = main;
-		client = main.getClient();
+	public ChatPanel() {
+		this.main = Vendor.getMain();
+		client = Vendor.getClient();
 		roomList = new RoomList(this);
 		initComponents();
 		this.initSelfComponents();
-		initData();
+		new ChatListener(this);
 	}
 
-	private void initData() {
-		this.client.send(new RoomListPacket());
-	}
 
 	private void initSelfComponents() {
 		this.chatListContainer.add(roomList);
@@ -48,14 +44,10 @@ public class ChatPanel extends javax.swing.JPanel {
 
 	}
 
-	public void renderChatList(List<RoomPacket> list) {
-		this.roomList.render(list);
-		this.revalidate();
-		this.repaint();
-	}
+	
 
 	public void renderChatBox(int id) {
-		this.chatBox = new ChatBox(id, client);
+		this.chatBox = new ChatBox(id);
 		this.chatBoxContainer.removeAll();
 		this.chatBoxContainer.add(chatBox);
 		this.chatBoxContainer.revalidate();
@@ -63,14 +55,22 @@ public class ChatPanel extends javax.swing.JPanel {
 	}
 	public void initMessage(ArrayList<MessagePacket> mss) {
 		if(chatBox != null) {
-			chatBox.initMessage(mss, main.getUsername());
+			chatBox.initMessage(mss, Vendor.getUsername());
 		}
 	}
 	public void addMessage(MessagePacket msg) {
 		if(chatBox != null) {
-			chatBox.addMessage(msg, main.getUsername());
+			chatBox.addMessage(msg, Vendor.getUsername());
 		}
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -92,6 +92,11 @@ public class ChatPanel extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(186, 186, 186));
 
         jButton1.setText("Tạo phòng");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -200,6 +205,11 @@ public class ChatPanel extends javax.swing.JPanel {
             .addComponent(chatBoxContainer, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+		Vendor.getMain().navigateToRoomCreator();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

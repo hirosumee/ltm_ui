@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="mistory-engine">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/mistory-engine.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

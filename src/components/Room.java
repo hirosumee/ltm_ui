@@ -13,30 +13,38 @@ import packets.RoomPacket;
  * @author hirosume
  */
 public class Room extends javax.swing.JPanel {
-	String name ="NaN";
+
+	String name = "NaN";
 	Date date = new Date();
 	int id = -1;
+	String lastMessage = "...";
 	RoomList.OnChange onchange;
-	
+
 	public void register(RoomList.OnChange on) {
 		this.onchange = on;
 	}
+
 	/**
 	 * Creates new form Room
 	 */
 	public Room() {
 		initComponents();
 	}
+
 	public Room(String name, Date date, int id) {
-		this.name = name;
+		if (name != null) {
+			this.name = name;
+
+		}
 		this.date = date;
 		this.id = id;
 		initComponents();
 	}
-	
+
 	public static Room fromPacket(RoomPacket p) {
-		return new Room(p.getCreator(), p.getUpdate_time(), p.getId());
+		return new Room(p.getGroupIP(), p.getUpdate_time(), p.getId());
 	}
+
 	/**
 	 * This method is called from within the constructor to initialize the form.
 	 * WARNING: Do NOT modify this code. The content of this method is always
@@ -61,7 +69,7 @@ public class Room extends javax.swing.JPanel {
         roomName.setText(name);
 
         lastMesssage.setFont(new java.awt.Font("Ubuntu", 0, 12)); // NOI18N
-        lastMesssage.setText("jLabel2");
+        lastMesssage.setText(lastMessage);
 
         roomTime.setFont(new java.awt.Font("Ubuntu", 0, 10)); // NOI18N
         roomTime.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -95,8 +103,8 @@ public class Room extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void formMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseClicked
-        // TODO add your handling code here:
-		if(this.onchange != null) {
+		// TODO add your handling code here:
+		if (this.onchange != null) {
 			onchange.execute(id);
 		}
     }//GEN-LAST:event_formMouseClicked
